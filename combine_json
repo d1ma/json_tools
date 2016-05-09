@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+
+import click
+import json
+import lib
+import shutil
+
+@click.command()
+@click.argument('sources', nargs=-1)
+@click.argument('base', nargs=1)
+@click.argument('output', nargs=1)
+def combine(sources, base, output):
+    with open(base, 'r') as f:
+        base = json.load(f)
+    for file in sources:
+        with open(file) as f:
+            s = json.load(f)
+            base.update(s)
+    with open(output, 'w') as f:
+        json.dump(base, f)
+    should_copy = lib.confirm("Move to /tmp/pipeline_data.json?", False)
+
+    if should_copy:
+        shutil.copyfile(output, "/tmp/pipeline_data.json")
+
+
+    # combine('original_xml', 'some_other_file',)
+
+if __name__=="__main__":
+    combine()
